@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace _4VGymEF.Models
+
+namespace _4VGymEF.Dtos
 {
-    public class ActivityTypeCreateDto
+    public class ActivityTypeDto
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
@@ -13,15 +14,15 @@ namespace _4VGymEF.Models
         [JsonPropertyName("number-monitors")]
         public int NumberMonitors { get; set; } = 1;
 
-        public ActivityTypeCreateDto()
+        public ActivityTypeDto()
         {
         }
-        public ActivityTypeCreateDto(int id, string name, int numberMonitors)
+        public ActivityTypeDto(int id, string name, int numberMonitors)
         {
             Id = id;
             Name = name;
             NumberMonitors = numberMonitors;
         }
-    }
 
+    }
 }

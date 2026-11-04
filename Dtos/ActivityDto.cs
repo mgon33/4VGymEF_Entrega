@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using _4VGymEF.Validations;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using _4VGymEF.Validations;
 
-namespace _4VGymEF.Models
+namespace _4VGymEF.Dtos
 {
-    public class ActivityCreateDto
+    public class ActivityDto
     {
         public int Id { get; set; }
 
@@ -18,7 +18,7 @@ namespace _4VGymEF.Models
         public required List<int> InstructorsId { get; set; }
 
         [JsonPropertyName("max_particpants")]
-        [Range(1, 25, ErrorMessage = "25|El aforo máximo debe estar entre 1 y 100 participantes.")]
+        [Range(1, 25, ErrorMessage = "25|El aforo máximo debe estar entre 1 y 25 participantes.")]
         public int MaxParticipants { get; set; }
 
         [JsonPropertyName("date_start")]
@@ -32,5 +32,4 @@ namespace _4VGymEF.Models
         [DateGreaterThan(nameof(DateStart), ErrorMessage = "41|La fecha de fin debe ser posterior a la fecha de inicio.")]
         public DateTime DateEnd { get; set; }
     }
-
 }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace _4VGymEF.Models
+namespace _4VGymEF.Dtos
 {
     public class ErrorResponse
     {

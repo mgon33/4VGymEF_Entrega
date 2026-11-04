@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using _4VGymEF.Validations;
-
-namespace _4VGymEF.Models
+﻿namespace _4VGymEF.Models
 {
     public class Activity
     {
@@ -17,9 +13,9 @@ namespace _4VGymEF.Models
 
         public ICollection<Instructor> Instructors { get; set; } = new List<Instructor>();
 
+        public int? ActivityTypeId { get; set; }
+
         public ActivityType? ActivityType { get; set; }
-
-
     }
 
 }

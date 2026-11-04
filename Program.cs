@@ -1,6 +1,6 @@
 
 using _4VGymEF.Data;
-using _4VGymEF.Models;
+using _4VGymEF.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

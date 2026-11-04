@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace _4VGymEF.Models
+﻿namespace _4VGymEF.Models
 {
     public class ActivityType
     {

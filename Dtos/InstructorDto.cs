@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace _4VGymEF.Models
+namespace _4VGymEF.Dtos
 {
-    public class InstructorCreateDto
+    public class InstructorDto
     {
-
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
@@ -21,11 +20,11 @@ namespace _4VGymEF.Models
         [JsonPropertyName("phone")]
         public string Phone { get; set; } = string.Empty;
 
-        public InstructorCreateDto()
+        public InstructorDto()
         {
         }
 
-        public InstructorCreateDto(int id, string name, string email, string photoUrl, string phone)
+        public InstructorDto(int id, string name, string email, string photoUrl, string phone)
         {
             Id = id;
             Name = name;
@@ -39,7 +38,5 @@ namespace _4VGymEF.Models
             return (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Email)
                 && string.IsNullOrEmpty(PhotoUrl) && string.IsNullOrEmpty(Phone));
         }
-
-
     }
 }
