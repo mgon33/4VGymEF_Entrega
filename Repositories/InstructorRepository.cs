@@ -1,30 +1,40 @@
 ﻿using _4VGymEF.Data;
 using _4VGymEF.Dtos;
+using _4VGymEF.Models;
 
 namespace _4VGymEF.Repositories
 {
     public class InstructorRepository
     {
-        private readonly GymDbContext _context;
+        private readonly GymDbContext _gymDbContext;
 
-        public InstructorRepository(GymDbContext context)
+        public InstructorRepository(GymDbContext gymDbContext)
         {
-            _context = context;
+            _gymDbContext = gymDbContext;
         }
 
         public IEnumerable<InstructorDto> GetAll()
         {
-            return _context.Instructors
-                .Select(i => new InstructorDto(i.Id, i.Name, i.Email, i.PhotoUrl, i.Phone))
+            return _gymDbContext.Instructors
+                .Select(i => new InstructorDto
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Email = i.Email,
+                    PhotoUrl = i.PhotoUrl,
+                    Phone = i.Phone
+                })
                 .ToList();
         }
 
         public InstructorDto? GetById(int id)
         {
-            return _context.Instructors
-                .Where(i => i.Id == id)
-                .Select(i => new InstructorDto(i.Id, i.Name, i.Email, i.PhotoUrl, i.Phone))
-                .FirstOrDefault();
+            Instructor? instructor = _gymDbContext.Instructors.Find(id);
+
+            if (instructor == null)
+                return null;
+
+            return new InstructorDto(instructor.Id, instructor.Name, instructor.Email, instructor.PhotoUrl, instructor.Phone);
         }
 
         public IEnumerable<InstructorDto> GetByFirstInitial(string? firstInitial = null)
@@ -34,20 +44,16 @@ namespace _4VGymEF.Repositories
                 return GetAll();
             }
 
-            return _context.Instructors
+            return _gymDbContext.Instructors
                 .Where(i => i.Name.StartsWith(firstInitial))
-                .Select(i => new InstructorDto(i.Id, i.Name, i.Email, i.PhotoUrl, i.Phone))
-                .ToList();
-        }
-
-        public List<InstructorDto> GetByIds(List<int> ids)
-        {
-            if (ids == null || !ids.Any())
-                return new List<InstructorDto>();
-
-            return _context.Instructors
-                .Where(i => ids.Contains(i.Id))
-                .Select(i => new InstructorDto(i.Id, i.Name, i.Email, i.PhotoUrl, i.Phone))
+                .Select(i => new InstructorDto
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Email = i.Email,
+                    PhotoUrl = i.PhotoUrl,
+                    Phone = i.Phone
+                })
                 .ToList();
         }
 
@@ -55,7 +61,7 @@ namespace _4VGymEF.Repositories
         {
             errorResponse = null;
 
-            bool exists = _context.Instructors.Any(i =>
+            bool exists = _gymDbContext.Instructors.Any(i =>
                 i.Email == instructorNew.Email || i.Name == instructorNew.Name);
 
             if (exists)
@@ -64,10 +70,12 @@ namespace _4VGymEF.Repositories
                 return null;
             }
 
-            int maxId = _context.Instructors.Max(i => (int?)i.Id) ?? 0;
-            InstructorDto instructor = new InstructorDto(maxId + 1, instructorNew.Name, instructorNew.Email, instructorNew.PhotoUrl, instructorNew.Phone);
+            if (_gymDbContext.Instructors.Count() == 0)
+                instructorNew.Id = 1;
+            else
+                instructorNew.Id = _gymDbContext.Instructors.Max(i => i.Id) + 1;
 
-            return instructor;
+            return instructorNew;
         }
     }
 }

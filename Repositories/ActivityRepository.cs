@@ -5,40 +5,43 @@ namespace _4VGymEF.Repositories
 {
     public class ActivityRepository
     {
-        private readonly GymDbContext _context;
+        private readonly GymDbContext _gymDbContext;
+        private readonly ActivityTypeRepository _repositoryActivityType;
+        private readonly InstructorRepository _repositoryInstructor;
 
-        public ActivityRepository(GymDbContext context)
+        public ActivityRepository(GymDbContext gymDbContext, ActivityTypeRepository repositoryActivityType, InstructorRepository repositoryInstructor)
         {
-            _context = context;
+            _gymDbContext = gymDbContext;
+            _repositoryActivityType = repositoryActivityType;
+            _repositoryInstructor = repositoryInstructor;
         }
 
         public ActivityDto? Add(ActivityDto activity, out List<ErrorResponse> errorResponse)
         {
             errorResponse = new List<ErrorResponse>();
 
-            if (!_context.ActivityTypes.Any(at => at.Id == activity.ActivityTypeId))
+            if (_repositoryActivityType.GetById(activity.ActivityTypeId) == null)
             {
-                errorResponse.Add(new ErrorResponse(34, "El tipo de actividad " + activity.ActivityTypeId + " no existe"));
+                errorResponse.Add(new ErrorResponse(34, $"El tipo de actividad: {activity.ActivityTypeId} no existe"));
             }
 
-            List<int> existingIds = _context.Instructors
-                .Where(i => activity.InstructorsId.Contains(i.Id))
-                .Select(i => i.Id)
-                .ToList();
+            var missingInstructors = activity.InstructorsId
+                .Where(instructorId => _repositoryInstructor.GetById(instructorId) == null);
 
-            errorResponse.AddRange(
-                activity.InstructorsId
-                        .Where(instructorId => !existingIds.Contains(instructorId))
-                        .Select(instructorIdNotFound =>
-                            new ErrorResponse(35, "El instructor: " + instructorIdNotFound + " no existe")));
+            foreach (var instructorId in missingInstructors)
+            {
+                errorResponse.Add(new ErrorResponse(35, $"El instructor: {instructorId} no existe"));
+            }
 
             if (errorResponse.Count > 0)
             {
                 return null;
             }
 
-            int maxId = _context.Activities.Max(a => (int?)a.Id) ?? 0;
-            activity.Id = maxId + 1;
+            if (_gymDbContext.Activities.Count() == 0)
+                activity.Id = 1;
+            else
+                activity.Id = _gymDbContext.Activities.Max(a => a.Id) + 1;
 
             return activity;
         }

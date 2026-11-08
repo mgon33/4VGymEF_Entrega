@@ -1,21 +1,27 @@
 ﻿using _4VGymEF.Data;
 using _4VGymEF.Dtos;
+using _4VGymEF.Models;
 
 namespace _4VGymEF.Repositories
 {
     public class ActivityTypeRepository
     {
-        private readonly GymDbContext _context;
+        private readonly GymDbContext _gymDbContext;
 
-        public ActivityTypeRepository(GymDbContext context)
+        public ActivityTypeRepository(GymDbContext gymDbContext)
         {
-            _context = context;
+            _gymDbContext = gymDbContext;
         }
 
         public IEnumerable<ActivityTypeDto> GetAll()
         {
-            return _context.ActivityTypes
-                .Select(at => new ActivityTypeDto(at.Id, at.Name, at.NumberMonitors))
+            return _gymDbContext.ActivityTypes
+                .Select(at => new ActivityTypeDto
+                {
+                    Id = at.Id,
+                    Name = at.Name,
+                    NumberMonitors = at.NumberMonitors
+                })
                 .ToList();
         }
 
@@ -24,24 +30,33 @@ namespace _4VGymEF.Repositories
             if (id == null)
                 return null;
 
-            return _context.ActivityTypes
-                .Where(at => at.Id == id)
-                .Select(at => new ActivityTypeDto(at.Id, at.Name, at.NumberMonitors))
-                .FirstOrDefault();
+            ActivityType? activityType = _gymDbContext.ActivityTypes.Find(id.Value);
+
+            if (activityType == null)
+                return null;
+
+            return new ActivityTypeDto(activityType.Id, activityType.Name, activityType.NumberMonitors);
         }
 
         public ActivityTypeDto? GetByName(string name)
         {
-            return _context.ActivityTypes
+            return _gymDbContext.ActivityTypes
                 .Where(at => at.Name == name)
-                .Select(at => new ActivityTypeDto(at.Id, at.Name, at.NumberMonitors))
+                .Select(at => new ActivityTypeDto
+                {
+                    Id = at.Id,
+                    Name = at.Name,
+                    NumberMonitors = at.NumberMonitors
+                })
                 .FirstOrDefault();
         }
 
         public ActivityTypeDto Add(ActivityTypeDto activityType)
         {
-            int maxId = _context.ActivityTypes.Max(at => (int?)at.Id) ?? 0;
-            activityType.Id = maxId + 1;
+            if (_gymDbContext.ActivityTypes.Count() == 0)
+                activityType.Id = 1;
+            else
+                activityType.Id = _gymDbContext.ActivityTypes.Max(at => at.Id) + 1;
 
             return activityType;
         }
